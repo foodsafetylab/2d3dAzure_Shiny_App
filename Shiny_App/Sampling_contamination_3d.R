@@ -240,7 +240,10 @@ contam_dis = function(spot_coord, n_contam, n_affected, covar, spread, dis_level
 # Simulate contamination in 2D (continuous) or 3D (discrete) scenarios
 sim_contam_new = function(geom, n_contam, c_hat, rho, m_kbar, conc_neg, lims, spread, 
                           covar, n_affected, spread_radius, cont_level, dis_level, seed){
-
+  # cat('n_contam: ',n_contam,'\n')
+  # cat('geom: ', geom,'\n')
+  # cat('lims: ', length(lims),'\n')
+  # cat('spread_radius: ', spread_radius,'\n')
   # Checkpoints
   stopifnot(spread %in% c("continuous", "discrete"))
   
@@ -280,9 +283,12 @@ sim_contam_new = function(geom, n_contam, c_hat, rho, m_kbar, conc_neg, lims, sp
 
 # A sub-function for simulation contamination for continuous case
 sim_contam_cont = function(geom, lims, n_contam, spread, spread_radius, cont_level){
-  
+  # cat('n_contam: ',n_contam,'\n')
+  # cat('geom: ', geom,'\n')
+  # cat('lims: ', length(lims),'\n')
+  # cat('spread_radius: ',spread_radius,'\n')
   #check point
-  stopifnot(n_contam > 0 & geom %in% c("point", "area") & length(lims) == 2 & spread_radius >= 0)
+  stopifnot(n_contam > 0 & geom %in% c("point", "area") & (length(lims) == 2) & spread_radius >= 0)
   
   spot_temp = gen_contam_cont(geom = geom, n_contam = n_contam, lims = lims, 
                               spread = spread, spread_radius = spread_radius)

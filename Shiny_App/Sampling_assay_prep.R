@@ -272,10 +272,11 @@ calc_true_contam = function(df_contam, rho, lims, m_kbar, conc_neg){
 
 
 # Create a function that calculates contamination levels for each sample point and combine "contam_xy" and "sp_xy"
-gen_sim_data_new = function(df_contam, df_sp, dist, spread, spread_radius, LOC, bg_level,
+gen_sim_data_new = function(df_contam, df_sp, dist, spread, spread_radius, LOC, bg_level,cont_level,
                             fun, L, rho, m_kbar, sp_radius, conc_neg, geom, method_sp, lims){
   
   stopifnot(spread %in% c("continuous", "discrete"))
+  cat("cont level",cont_level)
 
   ### Combine everything, fill the NAs with the corresponding contamination level.
   df = rbind(df_contam, df_sp)
@@ -292,7 +293,18 @@ gen_sim_data_new = function(df_contam, df_sp, dist, spread, spread_radius, LOC, 
     a = calc_level_cont(df_contam = df_contam, dist = dist, spread_radius = spread_radius, 
                         LOC = LOC, fun = fun, bg_level = bg_level)
     
-    # Update the cont_level column for the sample points.
+    if (global_dimensions==1){
+      # Update the cont_level column for the sample points.
+      
+      for (i in 1:length(a$cont_level)){
+        if(a$cont_level[i]!= bg_level){
+          a$cont_level[i]= 10^rnorm(1,(cont_level))
+        }
+      }
+      
+      df$cont_level[match(x = a$ID_sp, table = df$ID)] = a$cont_level  
+    } 
+
     df$cont_level[match(x = a$ID_sp, table = df$ID)] = a$cont_level 
     
     return(df)

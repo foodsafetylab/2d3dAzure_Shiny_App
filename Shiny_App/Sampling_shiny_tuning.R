@@ -19,7 +19,10 @@ parse_char_vec = function(string){
 # Iterate the model without any tuning parameters
 iterate_tune0 = function(input, Args, chosen_mode){
   
-  if(chosen_mode == "2D"){
+  if (chosen_mode == "1D"){
+    n_seed = input$n_seed_1d
+    n_iter = input$n_iter_1d
+  } else if(chosen_mode == "2D"){
     n_seed = input$n_seed
     n_iter = input$n_iter
       
@@ -127,9 +130,15 @@ iterate_tune2_gui = function(input, Args, chosen_mode){
 
 # Iterate and tuning for both 2D and 3D
 f_iterate_tune = function(input, output, Args, chosen_mode){
-  
+  # cat('f_iterate_tune Start\n')
   # Find the correct n_vars
-  if(chosen_mode == "2D"){
+  if(chosen_mode == "1D"){
+    
+    n_vars = 0
+    return(f_iterate_tune_2d(input = input, output = output, Args = Args,
+                             n_vars = n_vars, chosen_mode = chosen_mode))
+    
+  } else if(chosen_mode == "2D"){
     # 2D manual
     n_vars = input$n_vars
     return(f_iterate_tune_2d(input = input, output = output, Args = Args,
@@ -283,7 +292,9 @@ f_ui_tuning_2d_vs = function(input, ...){
 
 # Iterate and tuning for 2D mode (smart + manual)
 f_iterate_tune_2d = function(input, output, Args, n_vars, chosen_mode){
-  
+  # cat('f_iterate_tune_2d Start\n')
+  # cat(paste0('n_vars:',n_vars,'\n'))
+  # cat(paste0('n_vars length:',length(n_vars),'\n'))
   if(n_vars == 0){
     
     # When there is no tuning parameter

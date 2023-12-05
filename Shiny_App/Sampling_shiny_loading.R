@@ -78,7 +78,12 @@ make_n_strata = function(input){
 # A function for loading the input parameters into a list
 load_once = function(input, output, conc_neg){
   
-  if(input$sidebarMenu == "2D"){
+  if (input$sidebarMenu == "1D"){
+    
+    chosen_mode = "1D"
+    ArgList_default = load_once_manual_1D(input = input)
+    
+  } else if(input$sidebarMenu == "2D"){
     
     chosen_mode = "2D"
     ArgList_default = load_once_manual_2D(input = input)
@@ -194,32 +199,63 @@ make_var_table = function(Args, input, chosen_mode){
   b = a[!bool]
   
   # Get the iteration information
-  if(chosen_mode == "2D"){
-      temp = c(b, "n_seed" = input$n_seed, "n_iter" = input$n_iter)
-      d = get_tuning_info(n_vars = input$n_vars, var_prim = input$var_prim, 
-                          var_sec = input$var_sec, val_prim = input$val_prim, val_sec = input$val_sec)
-    } else if (chosen_mode == "3D"){
-      temp = c(b, "n_seed" = input$n_seed_3d, "n_iter" = input$n_iter_3d)
-      d = get_tuning_info(n_vars = input$n_vars_3d, var_prim = input$var_prim_3d, 
-                          var_sec = input$var_sec_3d, val_prim = input$val_prim_3d, val_sec = input$val_sec_3d)  
+  if(chosen_mode == "1D"){
+    temp = c(b, "n_seed" = input$n_seed_1d, "n_iter" = input$n_iter_1d)
+    d = get_tuning_info(n_vars = 0, var_prim = input$var_prim_1d,
+                        var_sec = input$var_sec_1d, val_prim = input$val_prim_1d, val_sec = input$val_sec_1d)
+    
+    #this was added to retun the right table
+    f = tibble(Variable = c("Production Time (h)",
+                            "Production Rate (tonne/h)",
+                            "Contamination proportion, prevalence (%)",
+                            "Mean contamination level (log CFU/g)",
+                            "Standard deviation of contamination level (log CFU/g)",
+                            "Sampling strategy",
+                            "Number of sample points",
+                            "Number of strata",
+                            "Number of sample points per strata",
+                            "Individual grab mass (g)"
+                            
+    ), 
+    Value = c(input$x_lim_1d, 
+              input$y_lim_1d,
+              input$spread_radius_1d,
+              input$cont_level_mu_1d,
+              input$cont_level_sd_1d,
+              input$method_sp_1d,
+              input$n_sp_1d,
+              ifelse(input$method_sp_1d =="strs",input$n_strata_1d,"NA"),
+              ifelse(input$method_sp_1d =="strs",input$n_sp_ps_1d,"NA"),
+              input$m_sp_1d
+    ))
+    return(f)
+    
+  }else if(chosen_mode == "2D"){
+    temp = c(b, "n_seed" = input$n_seed, "n_iter" = input$n_iter)
+    d = get_tuning_info(n_vars = input$n_vars, var_prim = input$var_prim, 
+                        var_sec = input$var_sec, val_prim = input$val_prim, val_sec = input$val_sec)
+  } else if (chosen_mode == "3D"){
+    temp = c(b, "n_seed" = input$n_seed_3d, "n_iter" = input$n_iter_3d)
+    d = get_tuning_info(n_vars = input$n_vars_3d, var_prim = input$var_prim_3d, 
+                        var_sec = input$var_sec_3d, val_prim = input$val_prim_3d, val_sec = input$val_sec_3d)  
+    
+  } else if (chosen_mode == "v_smart"){
+    
+    if(input$spread_vs == "continuous"){
+      temp = c(b, "n_iter_total_vs" = input$n_iter_total_vs)
+      d = get_tuning_info(n_vars = input$n_vars_vs, var_prim = input$var_prim_vs, 
+                          var_sec = input$var_sec_vs, val_prim = input$val_prim_vs, val_sec = input$val_sec_vs)
       
-    } else if (chosen_mode == "v_smart"){
+    } else if (input$spread_vs == "discrete"){
+      temp = c(b, "n_iter_total_vs" = input$n_iter_total_3d_vs)
+      d = get_tuning_info(n_vars = input$n_vars_3d_vs, var_prim = input$var_prim_3d_vs, 
+                          var_sec = input$var_sec_3d_vs, val_prim = input$val_prim_3d_vs, 
+                          val_sec = input$val_sec_3d_vs)
       
-      if(input$spread_vs == "continuous"){
-        temp = c(b, "n_iter_total_vs" = input$n_iter_total_vs)
-        d = get_tuning_info(n_vars = input$n_vars_vs, var_prim = input$var_prim_vs, 
-                            var_sec = input$var_sec_vs, val_prim = input$val_prim_vs, val_sec = input$val_sec_vs)
-        
-      } else if (input$spread_vs == "discrete"){
-        temp = c(b, "n_iter_total_vs" = input$n_iter_total_3d_vs)
-        d = get_tuning_info(n_vars = input$n_vars_3d_vs, var_prim = input$var_prim_3d_vs, 
-                            var_sec = input$var_sec_3d_vs, val_prim = input$val_prim_3d_vs, 
-                            val_sec = input$val_sec_3d_vs)
-        
-      } else {
-        stop("Unknown spread type.")
-      }
     } else {
+      stop("Unknown spread type.")
+    }
+  } else {
     stop("Unknown number of tuning variables")
   }
   
@@ -230,12 +266,117 @@ make_var_table = function(Args, input, chosen_mode){
   
   # Make a tibble
   f = tibble(Variable = var_meanings, Value = e)
+
   
   return(f)
 }
 
 # Place holder
 ph = p("Under development")
+
+####################### 1D ###############################
+
+# Load parameters once for 1D manual version
+load_once_manual_1D = function(input){
+  
+  
+  f_radius <- function(prev, x_lim, y_lim){
+    A = x_lim * y_lim
+    A_Circle =  A*(prev/100)
+    return(R = sqrt(A_Circle/pi))
+  }
+  
+  f_radius_approx <- function(radius, x_lim, y_lim, prev){
+    prevalence_frac = prev
+    return(ifelse(radius>((y_lim)/2),(x_lim*prev)/200,radius))
+  }
+  
+  # x_lim
+  # y_lim
+  # geom = "point"
+  # n_contam = 1
+  # prev aka spread_radius
+  # cont_level_mu
+  # cont_level_sd
+  # bg_level = 0.00001
+  # fun = "unif"
+  # n_sp
+  # method_sp
+  # by
+  # n_strata
+  # n_strata_row = NULL
+  # n_strata_col = NULL
+  # case = 12
+  # m
+  # M
+  # m_sp
+  # method_det = "enrichment"
+  # n_seed
+  # n_iter
+  # n_vars = 0
+  
+  spread_radius_cal = f_radius(input$spread_radius_1d,input$x_lim_1d, input$y_lim_1d)
+  # cat('spread_radius_cal: ', spread_radius_cal,'\n')
+  radius_approx = f_radius_approx(spread_radius_cal, input$x_lim_1d, input$y_lim_1d, input$spread_radius_1d)
+  # cat('radius_approx: ', radius_approx,'\n')
+  
+  lims=list(
+    xlim=c(0,input$x_lim_1d),
+    ylim=c(0,input$y_lim_1d)
+  )
+  
+  new_lims=list(
+    xlim=c(radius_approx,input$x_lim_1d-radius_approx),
+    ylim=c(
+      ifelse(radius_approx<(input$y_lim_1d/2),radius_approx,0),
+      ifelse(radius_approx<(input$y_lim_1d/2),input$y_lim_1d-radius_approx,input$y_lim_1d)
+      )
+    )
+  
+  if (input$method_sp_1d == "strs") {
+    n_sp = input$n_sp_ps_1d*input$n_strata_1d
+    n_strata = input$n_strata_1d
+    # n_strata = c(input$n_sp_1d, 1)
+  } else {
+    n_sp = input$n_sp_1d
+    n_strata = c(input$n_sp_1d, 1)
+  }
+  # cat('input$n_sp_ps_1d: ', input$n_sp_ps_1d, '\n')
+  # cat('input$n_sp_1d: ', input$n_sp_1d, '\n')
+  # cat('input$n_strata_1d: ', input$n_strata_1d, '\n')
+  # cat('n_sp: ', n_sp, '\n')
+  # cat('n_strata: ', n_strata, '\n')
+  # cat('lims$xlim: ', lims$xlim, '\n')
+  # cat('lims$ylim: ', lims$ylim, '\n')
+  # cat('new_lims$xlim: ', new_lims$xlim, '\n')
+  # cat('new_lims$ylim: ', new_lims$ylim, '\n')
+  
+  global_dimensions <<- 1 # I'm probably going to programming hell for this
+  global_old_lims <<- lims 
+  
+  ArgList_default = list(
+    n_contam = 1,
+    lims = new_lims,
+    spread = "continuous",
+    spread_radius = radius_approx,
+    cont_level = c(input$cont_level_mu_1d, input$cont_level_sd_1d),
+    method_sp = input$method_sp_1d,
+    n_sp = n_sp,
+    n_strata = n_strata,
+    # by = "row",
+    by = "column",
+    LOC = 0.001,
+    fun = "unif",
+    case = 12,
+    m = 0,
+    M = 0,
+    m_sp = input$m_sp_1d,
+    method_det = "enrichment",
+    bg_level = 0.00001,
+    geom = "point"
+    )
+  return(ArgList_default)
+}
 
 ####################### 2D ###############################
 
@@ -248,8 +389,14 @@ load_once_manual_2D = function(input){
     n_strata = input$n_strata
   }
   
-  ArgList_default = list(n_contam = input$n_contam, lims = list(xlim = c(0, input$x_lim), ylim = c(0, input$y_lim)),
-                         spread = "continuous", spread_radius = input$spread_radius,
+  global_dimensions <<- 2 # Still probably going to programming hell for this
+  
+  ArgList_default = list(
+    n_contam = input$n_contam,
+    lims = list(xlim = c(0, input$x_lim),
+                ylim = c(0, input$y_lim)
+                ),
+    spread = "continuous", spread_radius = input$spread_radius,
                          cont_level = c(input$cont_level_mu, input$cont_level_sd), method_sp = input$method_sp,
                          n_sp = input$n_sp, n_strata = n_strata, by = input$by, LOC = input$LOC,
                          fun = input$fun, case = input$case, m = input$m, M = input$M, m_sp = input$m_sp,

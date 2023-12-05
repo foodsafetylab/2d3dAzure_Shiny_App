@@ -151,6 +151,13 @@ sp_draw = function(method_sp, data, spread, xlim, ylim, n_strata, by, ...){
 ##################################### Overlay plots ##################################
 ## Simple random sampling
 overlay_draw_srs = function(data, spread, xlim, ylim){
+  # cat('spread: ', spread, '\n')
+  # cat('xlim: ', xlim, '\n')
+  # cat('ylim: ', ylim, '\n')
+  # cat('global_old_lims$xlim: ', global_old_lims$xlim, '\n')
+  # cat('global_old_lims$ylim: ', global_old_lims$ylim, '\n')
+  # cat('data: ', as.character(colnames(data)), '\n')
+  # cat('data: ', as.character(data), '\n')
   if(spread == "discrete"){
     ggplot() +
       geom_point(data = subset(data, subset = label == "sample point"), aes(x = X, y = Y, shape = label), color = "darkgreen") +
@@ -164,23 +171,50 @@ overlay_draw_srs = function(data, spread, xlim, ylim){
       coord_fixed(ratio = 1, xlim = xlim, ylim = ylim) +
       theme_bw()
   } else if (spread == "continuous"){
-    ggplot() +
-      geom_point(data = subset(x = data, subset = label == "sample point"),
-                 aes(x = X, y = Y,
-                     shape = label),
-                 color = "darkgreen") +
-      geom_point(data = subset(x = data, subset = label == "spot"), 
-                 aes(x = X, y = Y, 
-                     color = cont_level, 
-                     shape = label)) +
-      scale_color_gradient(name = "Contamination Level (CFU/g)", low = "orange", high = "red2") +
-      scale_shape_manual(values = c(15, 16)) +
-      geom_circle(data = subset(x = data, subset = label == "spot"),
-                  aes(x0 = X, y0 = Y, r = r), 
-                  fill = "coral", 
-                  alpha = 0.1) +
-      coord_fixed(ratio = 1, xlim = xlim, ylim = ylim) +
-      theme_bw()
+    if (global_dimensions == 1) {
+      ggplot() +
+        geom_point(data = subset(x = data, subset = label == "sample point"),
+                   aes(x = X, y = Y,
+                       shape = label),
+                   color = "darkgreen") +
+        geom_point(data = subset(x = data, subset = label == "spot"), 
+                   aes(x = X, y = Y, 
+                       color = cont_level, 
+                       shape = label)) +
+        scale_color_gradient(name = "Contamination Level (CFU/g)", low = "orange", high = "red2", guide = "none") +
+        scale_shape_manual(name = "", values = c(15, 16), labels = c("Grab Sample", "Center of Contamination ")) +
+        geom_circle(data = subset(x = data, subset = label == "spot"),
+                    aes(x0 = X, y0 = Y, r = r), 
+                    fill = "coral", 
+                    alpha = 0.1) +
+        coord_fixed(ratio = 1, xlim = xlim, ylim = ylim) +
+        theme_bw() +
+        xlab("Production Time (h)") +
+        ylab("Production Rate (tonne/h)") +
+        theme(legend.position="bottom")
+    } else {
+      #cat(paste0('global_dimensions: ', global_dimensions))
+      ggplot() +
+        geom_point(data = subset(x = data, subset = label == "sample point"),
+                   aes(x = X, y = Y,
+                       shape = label),
+                   color = "darkgreen") +
+        geom_point(data = subset(x = data, subset = label == "spot"), 
+                   aes(x = X, y = Y, 
+                       color = cont_level, 
+                       shape = label)) +
+        scale_color_gradient(name = "Contamination Level (CFU/g)", low = "orange", high = "red2", guide = "none") +
+        scale_shape_manual(name = "", values = c(15, 16), labels = c("Grab Sample", "Center of Contamination ")) +
+        geom_circle(data = subset(x = data, subset = label == "spot"),
+                    aes(x0 = X, y0 = Y, r = r), 
+                    fill = "coral", 
+                    alpha = 0.1) +
+        coord_fixed(ratio = 1, xlim = xlim, ylim = ylim) +
+        theme_bw() +
+        xlab("Length (m)") +
+        ylab("Width (m)") +
+        theme(legend.position="bottom")
+    }
   }
 }
 
@@ -214,9 +248,21 @@ overlay_draw_strs = function(data, spread, xlim, ylim, n_strata, by){
 ### A wrapper function
 overlay_draw = function(method_sp, data, spread, xlim, ylim, n_strata, by){
   if(method_sp %in% c("srs", "ss")){
+    # cat('overlay_draw\n')
     overlay_draw_srs(data = data, spread = spread, xlim = xlim, ylim = ylim)
   } else if (method_sp == "strs"){
     overlay_draw_strs(data = data, spread = spread, xlim = xlim, ylim = ylim, n_strata = n_strata, by = by)
+  }
+}
+
+overlay_draw_1d = function(method_sp, data, spread, xlim, ylim, n_strata, by){
+  # cat('overlay_draw_1d\n')
+  if(method_sp %in% c("srs", "ss")){
+    overlay_draw_srs(data = data, spread = spread, xlim = xlim, ylim = ylim)
+    # overlay_draw_srs(data = data, spread = spread, xlim = c(0,input$x_lim_1d), ylim = c(0,input$y_lim_1d))
+  } else if (method_sp == "strs"){
+    overlay_draw_strs(data = data, spread = spread, xlim = xlim, ylim = ylim, n_strata = n_strata, by = by)
+    # overlay_draw_strs(data = data, spread = spread, xlim = c(0,input$x_lim_1d), ylim = c(0,input$y_lim_1d), n_strata = n_strata, by = by)
   }
 }
 

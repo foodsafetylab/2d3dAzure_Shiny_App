@@ -1,0 +1,5 @@
+<html>
+
+<p style='margin-top:0in;margin-right:0in;margin-bottom:8.0pt;margin-left:0in;text-align:justify;font-size:15px;font-family:"Calibri",sans-serif;'>The number of <strong>equally sized (g) samples&nbsp;</strong>that will be taken for each stratum. Example. If I have 4 strata, and I select &ldquo;<strong><span style='font-size:14px;font-family:"Source Sans Pro",sans-serif;color:#333333;background:white;'>Number of sample points per strata</span>&rdquo;</strong><span style='font-size:14px;font-family:"Source Sans Pro",sans-serif;color:#333333;background:white;'>&nbsp;as <strong>5</strong>, then I will be taking a total of 4 X 5 = <strong>20 total samples per production lot</strong></span></p>
+
+</html>

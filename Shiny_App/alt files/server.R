@@ -1,16 +1,21 @@
-#
-# This is the server logic of a Shiny web application. You can run the
-# application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
 library(shiny)
 library(shinydashboard)
 library(shinyjs)
 
-source(file = "Sampling_libraries.R")
+library(tidyverse)
+library(ggforce)
+library(MASS)
+library(reshape2)
+library(kableExtra)
+library(plot3D)
+library(scales)
+library(rlang)
+library(mc2d)
+library(spatstat)
+library(caTools)
+library(mvnfast)
+
+source(file = "Sampling_libraries.R") # Redundant, put library above
 source(file = "Sampling_contamination.R")
 source(file = "Sampling_contamination_3d.R")
 source(file = "Sampling_visualization.R")
@@ -34,12 +39,15 @@ source(file = "Sampling_shiny_iteration.R")
 
 shinyServer(function(input, output, session) {
   
+  # Manual version 1D
+  source(file = "Server_manual_1d.R", local = TRUE)
+  
   # Manual version 2D
   source(file = "Server_manual_2d.R", local = TRUE)
   
   # Manual version 3D
   source(file = "Server_manual_3d.R", local = TRUE)
-
+  
   # Smart version 2D
   source(file = "Server_smart_2d.R", local = TRUE)
   

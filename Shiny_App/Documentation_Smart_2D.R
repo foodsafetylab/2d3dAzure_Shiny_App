@@ -5,7 +5,7 @@
 observeEvent(input$Doc_Field_Sma, {
   showModal(modalDialog(
     title = "Documentatation: Field Size",
-    includeHTML("FieldArea.html"),
+    includeHTML("Documentation Documents/FieldArea.html"),
     easyClose = TRUE
     ,size = "l"
   ))
@@ -14,7 +14,7 @@ observeEvent(input$Doc_Field_Sma, {
 observeEvent(input$Doc_Geometry_Sma, {
   showModal(modalDialog(
     title = "Documentatation: Geometry of Contamination Event",
-    includeHTML("Geometry.html"),
+    includeHTML("Documentation Documents/Geometry.html"),
     easyClose = TRUE
     ,size = "l"
   ))
@@ -23,7 +23,7 @@ observeEvent(input$Doc_Geometry_Sma, {
 observeEvent(input$Doc_Radius_Sma, {
   showModal(modalDialog(
     title = "Documentatation: Radius of Contamination Area",
-    includeHTML("Radius.html"),
+    includeHTML("Documentation Documents/Radius.html"),
     easyClose = TRUE
     ,size = "l"
   ))
@@ -32,7 +32,7 @@ observeEvent(input$Doc_Radius_Sma, {
 observeEvent(input$Doc_Contlevels_Sma, {
   showModal(modalDialog(
     title = "Documentatation: Mean and standard deviation of contamination level (log CFU/g)",
-    includeHTML("ContLevels.html"),
+    includeHTML("Documentation Documents/ContLevels.html"),
     easyClose = TRUE
     ,size = "l"
   ))
@@ -41,7 +41,7 @@ observeEvent(input$Doc_Contlevels_Sma, {
 observeEvent(input$Doc_Backlevels_Sma, {
   showModal(modalDialog(
     title = "Documentatation: Background Levels",
-    includeHTML("Backlevels.html"),
+    includeHTML("Documentation Documents/Backlevels.html"),
     easyClose = TRUE
     ,size = "l"
   ))
@@ -50,7 +50,7 @@ observeEvent(input$Doc_Backlevels_Sma, {
 observeEvent(input$Doc_Decay_Sma, {
   showModal(modalDialog(
     title = "Documentatation: Decay Function",
-    includeHTML("Decay.html"),
+    includeHTML("Documentation Documents/Decay.html"),
     easyClose = TRUE
     ,size = "l"
   ))
@@ -59,7 +59,7 @@ observeEvent(input$Doc_Decay_Sma, {
 observeEvent(input$Doc_LimitCont_Sma, {
   showModal(modalDialog(
     title = "Documentatation: Limit Contribution",
-    includeHTML("LimitCont.html"),
+    includeHTML("Documentation Documents/LimitCont.html"),
     easyClose = TRUE
     ,size = "l"
   ))
@@ -68,7 +68,7 @@ observeEvent(input$Doc_LimitCont_Sma, {
 observeEvent(input$Doc_Samplepoints_Sma, {
   showModal(modalDialog(
     title = "Documentatation: Number of Sample Points",
-    includeHTML("SamplePoints.html"),
+    includeHTML("Documentation Documents/SamplePoints.html"),
     easyClose = TRUE
     ,size = "l"
   ))
@@ -77,7 +77,7 @@ observeEvent(input$Doc_Samplepoints_Sma, {
 observeEvent(input$Doc_SamplingStrat_Sma, {
   showModal(modalDialog(
     title = "Documentatation: Sampling Strategies",
-    includeHTML("Sampling.html"),
+    includeHTML("Documentation Documents/Sampling.html"),
     easyClose = TRUE
     ,size = "l"
   ))

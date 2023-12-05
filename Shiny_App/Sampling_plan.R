@@ -70,7 +70,8 @@ sim_plan_strs_2d = function(n_sp, n_strata, by, xlim, ylim, radius){
     naming_sp_2d(n_sp = n_sp, x_sp = x_sp, y_sp = y_sp, radius = radius)
     
   } else {
-    
+    # cat('n_sp: ', n_sp, '\n')
+    # cat('n_strata: ', n_strata, '\n')
     # Checkpoint
     if (n_sp %% n_strata != 0) {
       stop("n_sp is not a multiple of n_strata.")
@@ -139,14 +140,26 @@ sim_plan_ss_2d = function(xlim, ylim, n_sp, radius, by){
 
 # A function that includes all kinds of sampling plan
 sim_plan_2d = function(method_sp, n_sp, xlim, ylim, radius, n_strata, by){
-  if(method_sp == "srs"){
-    sim_plan_srs_2d(n_sp = n_sp, xlim = xlim, ylim = ylim, radius = radius)
-  } else if (method_sp == "strs"){
-    sim_plan_strs_2d(n_sp = n_sp, n_strata = n_strata, by = by, xlim = xlim, ylim = ylim, radius = radius)
-  } else if (method_sp == "ss"){
-    sim_plan_ss_2d(xlim = xlim, ylim = ylim, n_sp = n_sp, radius = radius, by = by)
+  if (global_dimensions==1) {
+    if(method_sp == "srs"){
+      sim_plan_srs_2d(n_sp = n_sp, xlim = global_old_lims$xlim, ylim = global_old_lims$ylim, radius = radius)
+    } else if (method_sp == "strs"){
+      sim_plan_strs_2d(n_sp = n_sp, n_strata = n_strata, by = by, xlim = global_old_lims$xlim, ylim = global_old_lims$ylim, radius = radius)
+    } else if (method_sp == "ss"){
+      sim_plan_ss_2d(xlim = global_old_lims$xlim, ylim = global_old_lims$ylim, n_sp = n_sp, radius = radius, by = by)
+    } else {
+      stop("Sampling method does not exist. Try 'srs', 'strs', or 'ss'.")
+    }
   } else {
-    stop("Sampling method does not exist. Try 'srs', 'strs', or 'ss'.")
+    if(method_sp == "srs"){
+      sim_plan_srs_2d(n_sp = n_sp, xlim = xlim, ylim = ylim, radius = radius)
+    } else if (method_sp == "strs"){
+      sim_plan_strs_2d(n_sp = n_sp, n_strata = n_strata, by = by, xlim = xlim, ylim = ylim, radius = radius)
+    } else if (method_sp == "ss"){
+      sim_plan_ss_2d(xlim = xlim, ylim = ylim, n_sp = n_sp, radius = radius, by = by)
+    } else {
+      stop("Sampling method does not exist. Try 'srs', 'strs', or 'ss'.")
+    }
   }
 }
 
